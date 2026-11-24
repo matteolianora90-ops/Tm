@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tourism Challenge: Family Feud</title>
+<style>
+:root{--gold:#f5c451;--gold-l:#ffe4a0;--blue:#1677ff;--red:#ff2a3c;--green:#10b981;--navy:#06152e;--midnight:#0a1f4d;--royal:#123f91;--cyan:#36d9ff;--light-blue:#a8e8ff}
+*{box-sizing:border-box;margin:0;padding:0;user-select:none}
+html{font-size:100%}
+body{font-family:'Segoe UI',Roboto,'Noto Sans JP',Arial,sans-serif;font-size:1.0625rem;line-height:1.5;background:linear-gradient(180deg,#071a3b,#06152e 68%,#020817);color:#f8fafc;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;overflow-x:hidden;-webkit-text-size-adjust:100%;isolation:isolate}
+button{font-family:inherit;line-height:1.2}
+
+/* Header */
+.hdr{background:#060f24;border-bottom:3px solid var(--gold);padding:12px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:1.05rem;font-weight:600}
+.logo{border:3px solid var(--gold);border-radius:999px;padding:6px 20px;background:#0b2559;text-align:center}
+.logo small{display:block;font-size:.9rem;letter-spacing:2px;color:var(--gold-l);font-weight:800}
+.logo b{font-size:1.4rem;letter-spacing:1.5px}
+.pill{display:inline-block;background:var(--gold);color:#081126;font-weight:900;font-size:1rem;padding:8px 16px;border-radius:999px;margin-right:6px}
+.hdr button{background:#ffffff18;border:1px solid #ffffff40;color:#fff;border-radius:8px;padding:9px 14px;font-weight:700;font-size:1rem;cursor:pointer;min-height:42px}
+
+/* Screens */
+.screen{display:none;flex:1;flex-direction:column;max-width:1300px;width:100%;margin:0 auto;padding:16px}
+.screen.active{display:flex}
+
+/* Start card */
+.card{margin:auto;max-width:800px;width:100%;background:#0b1f48;border:3px solid var(--gold);border-radius:22px;padding:34px 24px;text-align:center;box-shadow:0 20px 50px #000a}
+.card > div:first-child{font-size:1.1rem;line-height:1.4}
+.card h1{font-size:clamp(2.2rem,6vw,3.6rem);text-transform:uppercase;line-height:1.1;margin:12px 0 14px}
+.card h1 span{display:block;color:var(--gold)}
+.card p{font-size:1.25rem;line-height:1.5}
+.teams{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;margin:26px 0}
+.tbox{background:#1d6ff22a;border:2px solid var(--blue);border-radius:14px;padding:16px}
+.tbox small{font-size:1rem;color:var(--gold-l);font-weight:800;letter-spacing:1.5px}
+.tbox div{font-size:1.75rem;font-weight:800;margin-top:6px;line-height:1.2;overflow-wrap:anywhere}
+.vs{font-size:1.1rem;color:var(--gold);font-weight:800;border:2px solid var(--gold);border-radius:50%;width:52px;height:52px;display:grid;place-items:center}
+.big{background:linear-gradient(var(--gold-l),var(--gold));color:#071126;border:0;border-radius:14px;padding:16px 38px;font-size:1.3rem;font-weight:900;cursor:pointer}
+
+/* Scoreboard */
+.top{display:grid;grid-template-columns:210px 1fr 210px;gap:14px;margin-bottom:14px}
+.team{background:#0a1b40;border:3px solid #38a3ff70;border-radius:16px;padding:12px;text-align:center;display:flex;flex-direction:column;justify-content:space-between;gap:4px;transition:.25s}
+.team.on{border-color:var(--gold);box-shadow:0 0 24px #f5b700aa;transform:translateY(-2px)}
+.team .tag{font-size:.95rem;font-weight:900;letter-spacing:1px;color:#b6c2d4}
+.team.on .tag{color:var(--gold)}
+.team .nm{font-size:1.4rem;font-weight:800;text-transform:uppercase;line-height:1.2;overflow-wrap:anywhere}
+.team .sc{font-size:3.2rem;line-height:1.1;font-weight:800;color:var(--gold-l);transition:transform .25s}
+.team .sc.bump{transform:scale(1.2);color:#fff}
+
+/* Question box */
+.qbox{background:#081838;border:3px solid var(--blue);border-radius:16px;padding:14px 18px}
+.qtop{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.qlabel{font-size:1.05rem;font-weight:900;letter-spacing:1.5px;color:var(--gold-l)}
+.bank{background:#040c1f;border:2px solid var(--gold);border-radius:10px;padding:3px 12px;font-size:1rem;font-weight:800;color:var(--gold-l)}
+.qr{color:var(--gold-l);font-weight:700;font-size:clamp(1.05rem,2vw,1.3rem);line-height:1.4;margin-bottom:6px}
+.qe{font-weight:800;font-size:clamp(1.25rem,2.4vw,1.7rem);line-height:1.3}
+/* Status bar */
+.status{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#060f26;border:2px solid #f5b70066;border-radius:12px;padding:10px 16px;margin-bottom:14px;flex-wrap:wrap}
+.status > div:first-child{font-size:1.1rem;font-weight:600;line-height:1.45;flex:1;min-width:240px}
+.step{display:inline-block;background:#38a3ff33;border:1px solid var(--blue);color:#bae6fd;font-weight:800;font-size:1rem;padding:4px 10px;border-radius:8px;margin-right:10px}
+.tag2{display:none;margin-left:8px;padding:4px 12px;border-radius:999px;font-size:1rem;font-weight:900;color:#071126;background:var(--gold)}
+.tag2.play{background:var(--green)} .tag2.pass{background:#f97316;color:#fff} .tag2.tie{background:#ec4899;color:#fff}
+.strike{display:flex;align-items:center;gap:10px;border:2px solid #ff2a3c70;border-radius:10px;padding:5px 12px;font-size:1.05rem;font-weight:900;color:#fecdd3}
+.slot{width:36px;height:36px;border:2px dashed #ff2a3c80;border-radius:8px;display:grid;place-items:center;color:#ff2a3c70;font-size:1.1rem;font-weight:900}
+.slot.on{background:var(--red);border:2px solid #fff;color:#fff;box-shadow:0 0 16px var(--red)}
+
+/* Pass or play pop-up */
+.decision-overlay{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:18px;overflow-y:auto;background:#020817c9;backdrop-filter:blur(4px)}
+.decision-overlay.show{display:flex}
+.decision-popup{width:min(100%,680px);max-height:calc(100vh - 36px);overflow-y:auto;padding:clamp(24px,5vw,44px);border:3px solid var(--gold);border-radius:24px;background:radial-gradient(ellipse at top,#193f78,#081735 72%);text-align:center;box-shadow:0 0 28px #f5b70080,0 24px 70px #000b;animation:decision-pop .5s cubic-bezier(.2,.9,.3,1.2) both}
+.decision-kicker{color:var(--gold-l);font-size:1rem;font-weight:900;letter-spacing:2px}
+.decision-popup h2{margin:8px 0 10px;color:#fff;font-size:clamp(2rem,7vw,3.3rem);line-height:1.1;text-shadow:0 0 20px #ffe06680}
+.decision-team{margin-bottom:26px;color:#dbeafe;font-size:clamp(1.1rem,3.5vw,1.5rem);font-weight:800}
+.decision-buttons{display:flex;justify-content:center;gap:28px}
+.decision-buttons .b{flex:1 1 220px;max-width:250px;min-height:112px;padding:20px 30px;border:2px solid #ffffffb3;border-radius:18px;color:#fff;font-size:clamp(1.8rem,5vw,2.5rem);font-weight:900;letter-spacing:1px;cursor:pointer;box-shadow:0 8px 0 #0006,0 0 24px #ffffff35;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+.decision-buttons .b:hover{transform:scale(1.06);filter:brightness(1.12);box-shadow:0 10px 0 #0006,0 0 34px #ffffff60}
+.decision-buttons .b:active{transform:scale(.98)}
+.decision-overlay .decision-buttons .pass{background:linear-gradient(145deg,#38a3ff,#0757c9);box-shadow:0 8px 0 #063d91,0 0 28px #38a3ff90}
+.decision-overlay .decision-buttons .play{background:linear-gradient(145deg,#ffad33,#e66a00);box-shadow:0 8px 0 #984000,0 0 28px #ff9a2f90}
+.decision-buttons .b:focus-visible{outline:4px solid #fff;outline-offset:5px}
+@keyframes decision-pop{0%{opacity:0;transform:scale(.72)}75%{opacity:1;transform:scale(1.04)}100%{opacity:1;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.decision-popup{animation:none}.decision-buttons .b{transition:none}}
+
+/* Board */
+.board{background:#061532;border:4px solid var(--gold);border-radius:20px;padding:14px;margin-bottom:14px;display:flex;flex-direction:column;gap:12px}
+.ans{perspective:1000px;height:84px}
+.inner{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.ans.rev .inner{transform:rotateX(180deg)}
+.front,.back{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;display:flex;align-items:center;overflow:hidden}
+.front{background:linear-gradient(#1a56c4,#082052);border:2px solid #60a5fa;justify-content:center}
+.oval{width:58px;height:46px;border-radius:50%;background:#0b1d52;border:2px solid var(--gold);display:grid;place-items:center;font-size:1.7rem;font-weight:800}
+.back{transform:rotateX(180deg);background:linear-gradient(90deg,#0c2b66,#16449c);border:2px solid var(--gold-l);justify-content:space-between;padding-left:14px}
+.left{display:flex;align-items:center;gap:14px;min-width:0;flex:1}
+.num{width:38px;height:38px;border:1.5px solid var(--gold);border-radius:8px;display:grid;place-items:center;font-size:1.15rem;font-weight:800;color:var(--gold-l);flex-shrink:0}
+.txt{min-width:0}
+.en{font-weight:900;text-transform:uppercase;font-size:clamp(1.1rem,2.2vw,1.55rem);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jp{font-size:clamp(1.05rem,1.6vw,1.2rem);line-height:1.3;font-weight:700;color:#bae6fd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jp i{color:var(--gold-l)}
+.pts{width:104px;height:100%;background:linear-gradient(var(--gold-l),var(--gold));border-left:3px solid #fff;color:#071126;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.pts b{font-size:2.2rem;line-height:1}
+.pts small{font-size:.85rem;font-weight:900;letter-spacing:1px;margin-top:2px}
+
+/* Host console */
+.console{background:#050d1f;border:2px solid #94a3b84d;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.b{border:1px solid #fff5;border-radius:10px;padding:12px 18px;min-height:46px;font-weight:800;color:#fff;cursor:pointer;font-size:1rem}
+.b:disabled{opacity:.4;cursor:not-allowed}
+.b.prev{background:#334155}.b.next{background:#2563eb}.b.wrong{background:#dc2626}.b.undo{background:#64748b}
+.b.play{background:#059669}.b.pass{background:#ea580c}.b.rr{background:#6d28d9}.b.rg{background:#991b1b}
+
+/* Strike overlay */
+.overlay{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:#78081459;pointer-events:none}
+.overlay.show{display:flex;animation:fade 1.1s forwards}
+.bigx{width:200px;height:200px;border-radius:26px;background:linear-gradient(#ff2a3c,#990a18);border:6px solid #fff;display:grid;place-items:center;font-size:8rem;font-weight:900}
+@keyframes fade{0%,70%{opacity:1}100%{opacity:0}}
+
+/* Winner */
+.winner{margin:auto;max-width:820px;width:100%;background:#0b1f48;border:4px solid var(--gold);border-radius:24px;padding:34px 24px;text-align:center}
+.winner > div:first-child{font-size:1.1rem;line-height:1.4}
+.banner{background:linear-gradient(90deg,#b87c00,var(--gold-l),#b87c00);color:#071126;font-size:clamp(1.8rem,4.8vw,3.2rem);line-height:1.15;font-weight:800;padding:16px;border-radius:16px;margin:16px 0 24px}
+.finals{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:26px}
+.fin{border:2px solid #38a3ff70;border-radius:16px;padding:18px;background:#ffffff0f}
+.fin.win{border-color:var(--gold);background:#f5b70024}
+.fin .n{font-size:1.4rem;font-weight:800;text-transform:uppercase;line-height:1.25}
+.fin .s{font-size:3.4rem;line-height:1.2;font-weight:800;color:var(--gold-l)}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
+
+/* Tablet */
+@media(max-width:900px){
+  .top{grid-template-columns:1fr 1fr}
+  .qbox{grid-column:1/-1;order:-1}
+}
+
+/* Mobile */
+@media(max-width:600px){
+  body{font-size:1rem}
+  .hdr{justify-content:center;text-align:center}
+  .teams,.finals{grid-template-columns:1fr}
+  .vs{margin:auto}
+  .team .sc{font-size:2.8rem}
+  .status > div:first-child{min-width:100%}
+  .decision-popup{padding:26px 20px}
+  .decision-team{margin-bottom:20px}
+  .decision-buttons{flex-direction:column;align-items:stretch;gap:16px}
+  .decision-buttons .b{width:100%;max-width:none;min-height:82px}
+  .ans{height:104px}
+  .en,.jp{white-space:normal;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2}
+  .en{font-size:1.05rem}
+  .jp{font-size:1rem}
+  .left{gap:10px}
+  .pts{width:80px}
+  .pts b{font-size:1.9rem}
+  .b{flex:1 1 44%;padding:12px 10px}
+  .bigx{width:150px;height:150px;font-size:6rem}
+}
+
+/* Blue-and-gold broadcast studio */
+body::before,body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1}
+body::before{background:
+  radial-gradient(ellipse at 50% 0%,#1677ff42,transparent 38%),
+  radial-gradient(ellipse at 8% 12%,#36d9ff30,transparent 24%),
+  radial-gradient(ellipse at 92% 12%,#36d9ff28,transparent 24%),
+  linear-gradient(180deg,#071a3b 0%,#06152e 55%,#020817 100%)}
+body::after{inset:auto 0 0;height:26vh;min-height:150px;background:
+  linear-gradient(180deg,transparent,#1677ff14 15%,#36d9ff24 16%,transparent 18%),
+  radial-gradient(ellipse at 50% 10%,#36d9ff24,transparent 56%),
+  linear-gradient(180deg,transparent,#06152e 85%);transform:perspective(220px) rotateX(10deg);transform-origin:bottom}
+.stage-scenery{position:fixed;z-index:-1;inset:auto 0 10vh;height:32vh;min-height:150px;pointer-events:none;opacity:.24}
+.stage-scenery .fuji{position:absolute;left:38%;bottom:0;width:28vw;height:26vh;background:linear-gradient(180deg,#a8e8ff55,#123f9155 65%,#06152e);clip-path:polygon(50% 0,100% 100%,0 100%)}
+.stage-scenery .fuji::after{content:"";position:absolute;inset:0;background:#a8e8ff55;clip-path:polygon(50% 0,64% 30%,55% 26%,50% 37%,43% 25%,35% 31%)}
+.stage-scenery .pagoda{position:absolute;left:8%;bottom:0;width:90px;height:24vh;min-height:110px;border-inline:5px solid #123f91;border-top:0;background:linear-gradient(90deg,transparent,#123f9155 45%,transparent)}
+.stage-scenery .pagoda::before{content:"";position:absolute;top:15%;left:-24px;width:124px;height:20px;background:#123f91;clip-path:polygon(12% 0,88% 0,100% 100%,0 100%)}
+.stage-scenery .pagoda::after{content:"";position:absolute;top:48%;left:-24px;width:124px;height:20px;background:#123f91;clip-path:polygon(12% 0,88% 0,100% 100%,0 100%)}
+.stage-scenery .torii{position:absolute;right:9%;bottom:0;width:100px;height:15vh;min-height:85px;border-inline:8px solid #123f91}
+.stage-scenery .torii::before{content:"";position:absolute;top:0;left:-18px;width:120px;height:10px;background:#123f91;box-shadow:0 12px 0 -2px #123f91}
+.hdr{position:relative;z-index:1;background:linear-gradient(180deg,#071633f2,#06152ef5);border-bottom:1px solid #36d9ffb3;box-shadow:0 3px 0 #f5c4519c,0 8px 30px #0008}
+.hdr::after{content:"";position:absolute;left:8%;right:8%;bottom:-4px;height:2px;background:linear-gradient(90deg,transparent,#36d9ff,#fff,#36d9ff,transparent);box-shadow:0 0 12px #36d9ff}
+.logo{border:1px solid #f5c451;background:linear-gradient(145deg,#123f91,#071633);border-radius:12px;box-shadow:inset 0 1px #ffffff38,0 5px 16px #0008,0 0 12px #36d9ff24}
+.logo b{color:#fff;text-shadow:0 1px 0 #76521a,0 0 12px #36d9ff48}
+.host-names{padding:7px 14px;border:1px solid #36d9ff60;border-radius:8px;background:linear-gradient(145deg,#123f9166,#06152e);box-shadow:inset 0 1px #fff2,0 4px 12px #0006}
+.pill{background:linear-gradient(145deg,#ffe4a0,#c18a2c);box-shadow:inset 0 1px #fff9,0 3px 9px #0008}
+.hdr button,.b,.big{position:relative;overflow:hidden;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease}
+.hdr button{background:linear-gradient(145deg,#123f91,#081b3c);border:1px solid #36d9ff8a;box-shadow:inset 0 1px #fff3,0 4px 10px #0007}
+.screen{position:relative;z-index:0;max-width:1450px;padding:clamp(14px,2.4vw,30px)}
+.card,.winner{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(145deg,#0d2b5feF,#071631f7 65%);border:1px solid #f5c451;border-radius:22px;box-shadow:inset 0 1px #fff2,inset 0 0 0 5px #36d9ff0b,0 0 0 4px #123f915e,0 18px 55px #000b,0 0 32px #1677ff24;animation:studio-enter .55s ease-out both}
+.card::before,.winner::before{content:"";position:absolute;z-index:-1;inset:0;background:radial-gradient(ellipse at 50% 0%,#1677ff3d,transparent 55%),repeating-linear-gradient(90deg,#36d9ff08 0 1px,transparent 1px 5px);pointer-events:none}
+.card h1{color:#f5c451;text-shadow:0 2px 0 #583e13,0 5px 12px #000b,0 0 20px #f5c4513d;letter-spacing:.025em}
+.card h1 span{color:#fff;text-shadow:0 2px 0 #123f91,0 0 18px #36d9ff54}
+.card > div:first-child,.winner > div:first-child{position:relative;color:var(--light-blue)!important}
+.card p{color:#eaf6ff}
+.teams{align-items:stretch}
+.tbox,.fin{position:relative;background:linear-gradient(145deg,#123f91c9,#071631);border:1px solid #36d9ff9c;border-radius:14px;box-shadow:inset 0 1px #fff2,inset 0 0 0 4px #1677ff16,0 8px 20px #0007}
+.tbox::after,.fin::after{content:"";position:absolute;inset:4px;border:1px solid #f5c45155;border-radius:10px;pointer-events:none}
+.tbox div,.fin .n{color:#fff;text-shadow:0 2px 9px #000}
+.vs{align-self:center;border:1px solid #f5c451;color:#ffe4a0;background:radial-gradient(circle,#123f91,#06152e);box-shadow:0 0 16px #f5c45150,inset 0 1px #fff4}
+.big{background:linear-gradient(145deg,#ffe4a0 0%,#f5c451 42%,#c18a2c 100%);color:#06152e;border:1px solid #fff2;border-radius:12px;box-shadow:inset 0 1px #fff9,inset 0 -4px #8f641e60,0 7px 18px #0008,0 0 18px #f5c45135}
+.big:hover,.hdr button:hover,.b:not(:disabled):hover{transform:translateY(-2px);filter:brightness(1.12);box-shadow:0 8px 20px #0008,0 0 16px #36d9ff35}
+.big:active,.hdr button:active,.b:not(:disabled):active{transform:translateY(1px)}
+.team{position:relative;background:linear-gradient(145deg,#0c2858,#06142d);border:1px solid #36d9ff8c;border-radius:15px;box-shadow:inset 0 1px #fff2,inset 0 0 0 4px #1677ff12,0 8px 20px #0007}
+.team::after{content:"";position:absolute;inset:4px;border:1px solid #f5c45138;border-radius:11px;pointer-events:none}
+.team.on{border-color:#f5c451;box-shadow:inset 0 1px #fff4,0 0 0 2px #f5c45145,0 0 24px #f5c45165,0 8px 20px #0008}
+.team.on .tag{color:#ffe4a0}
+.team .nm{color:#fff}
+.team .sc{color:#a8e8ff;text-shadow:0 0 18px #36d9ff4f}
+.qbox,.status,.board,.console{position:relative;background:linear-gradient(145deg,#0a1f4df2,#06152efc);border:1px solid #36d9ff9c;border-radius:15px;box-shadow:inset 0 1px #fff2,inset 0 0 0 4px #1677ff12,0 9px 22px #0007}
+.qbox::before,.board::before,.console::before{content:"";position:absolute;inset:5px;border:1px solid #f5c45140;border-radius:10px;pointer-events:none}
+.qbox{border-width:2px;padding:16px 20px}
+.qlabel,.bank{color:#ffe4a0}
+.bank{border-color:#f5c451;background:#06152e;box-shadow:inset 0 1px #fff2}
+.qr{color:#a8e8ff}
+.qe{color:#fff;font-size:clamp(1.35rem,2.6vw,1.9rem);text-shadow:0 2px 8px #0008}
+.status{border-color:#f5c45177}
+.step{background:#123f91;border-color:#36d9ff;color:#fff}
+.tag2{background:#f5c451;color:#06152e}
+.tag2.play{background:#ff8a24;color:#fff}
+.tag2.pass{background:#1677ff;color:#fff}
+.tag2.tie{background:#f5c451;color:#06152e}
+.board{border:2px solid #f5c451;padding:18px;gap:12px}
+.ans{height:clamp(82px,9vh,104px);perspective:1200px}
+.inner{transition:transform .65s cubic-bezier(.2,.72,.24,1)}
+.front,.back{border-radius:10px}
+.front{background:linear-gradient(110deg,#081832,#0d2d62 52%,#081832);border:1px solid #36d9ff;box-shadow:inset 0 1px #fff2,inset 0 0 22px #1677ff21,0 4px 10px #0007}
+.oval{width:54px;height:44px;background:linear-gradient(145deg,#123f91,#06152e);border:1px solid #f5c451;color:#fff;box-shadow:inset 0 1px #fff4,0 3px 10px #0008}
+.back{background:linear-gradient(100deg,#0a1f4d,#123f91 58%,#0a1f4d);border:1px solid #f5c451;box-shadow:inset 0 1px #fff3,0 5px 12px #0008}
+.num{border-color:#36d9ff;color:#fff;background:#06152e}
+.en{color:#fff}
+.jp{color:#a8e8ff;white-space:normal;overflow:visible;text-overflow:clip}
+.pts{width:clamp(150px,18vw,220px);padding:4px 10px;background:linear-gradient(145deg,#ffe4a0,#f5c451 60%,#c18a2c);border-left:2px solid #fff;color:#06152e}
+.pts b{font-size:clamp(1.45rem,2.5vw,2rem)}
+.pts small{max-width:100%;font-size:clamp(.65rem,1vw,.78rem);letter-spacing:.25px;line-height:1.15;text-align:center}
+.console{border-color:#36d9ff6e}
+.console .row{position:relative;z-index:1}
+.b{border:1px solid #36d9ff8c;border-radius:9px;background:linear-gradient(145deg,#123f91,#071a38);box-shadow:inset 0 1px #fff2,0 4px 10px #0007}
+.b.prev,.b.next,.b.undo{background:linear-gradient(145deg,#1677ff,#123f91);border-color:#a8e8ff}
+.b.wrong,.b.rg{background:linear-gradient(145deg,#a52935,#681720);border-color:#ff8e98}
+.b.rr{background:linear-gradient(145deg,#c18a2c,#76511b);border-color:#ffe4a0;color:#fff}
+.b:disabled{filter:saturate(.45);opacity:.5}
+.decision-overlay{background:#020817d9;backdrop-filter:blur(6px)}
+.decision-overlay::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 46%,#1677ff30,transparent 48%);pointer-events:none}
+.decision-popup{border:1px solid #f5c451;border-radius:18px;background:linear-gradient(145deg,#123f91,#06152e 72%);box-shadow:inset 0 1px #fff3,0 0 0 5px #36d9ff13,0 0 30px #36d9ff42,0 24px 70px #000d}
+.decision-kicker{color:#ffe4a0}
+.decision-popup h2{color:#fff;text-shadow:0 2px 0 #123f91,0 0 22px #36d9ff66}
+.decision-team{color:#a8e8ff}
+.decision-overlay .decision-buttons .pass{background:linear-gradient(145deg,#1677ff,#0a1f4d);border:2px solid #36d9ff;box-shadow:inset 0 1px #fff5,0 7px 0 #06152e,0 0 24px #36d9ff65}
+.decision-overlay .decision-buttons .play{background:linear-gradient(145deg,#ffb851,#ff8a24 62%,#bd5411);border:2px solid #ffe4a0;box-shadow:inset 0 1px #fff7,0 7px 0 #71350e,0 0 24px #ff8a2460}
+.winner{border-color:#f5c451}
+.banner{background:linear-gradient(110deg,#8f641e,#ffe4a0 48%,#c18a2c);box-shadow:inset 0 1px #fff9,0 5px 18px #0007;text-shadow:0 1px #fff8}
+.fin.win{border-color:#f5c451;background:linear-gradient(145deg,#123f91,#0a1f4d);box-shadow:0 0 22px #f5c45145}
+.fin .s{color:#ffe4a0;text-shadow:0 0 18px #f5c45150}
+.strike{border-color:#ff5965;color:#ffd9dc;background:#350e18;box-shadow:inset 0 0 12px #ff2a3c30,0 0 12px #ff2a3c2b}
+.slot{border-color:#ff5965;color:#ff8790}
+.slot.on{box-shadow:0 0 18px #ff2a3c,0 0 38px #ff2a3c70}
+.bigx{border-radius:14px;box-shadow:0 0 25px #ff2a3c,0 0 55px #ff2a3c80;animation:strike-shake .36s ease-in-out}
+@keyframes strike-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-9px)}75%{transform:translateX(9px)}}
+@keyframes studio-enter{from{opacity:0;transform:translateY(12px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+.fin .n{color:#fff}
+.fin .s::after{content:" POINTS";display:block;margin-top:3px;font-size:.72rem;letter-spacing:1px;color:#a8e8ff}
+.final-score-heading{margin:-8px 0 14px;color:#ffe4a0;font-size:1.15rem;font-weight:900;letter-spacing:2px}
+#confetti{opacity:.72}
+.status.steal{border-color:#f5c451;background:linear-gradient(100deg,#123f91,#0a1f4d 50%,#123f91);box-shadow:inset 0 1px #fff3,0 0 18px #f5c45135,0 8px 20px #0008}
+.status.steal #cue{color:#ffe4a0;font-weight:900}
+.status.steal .tag2{background:#ff8a24;color:#fff;box-shadow:0 0 14px #ff8a2460}
+@media(max-width:900px){
+  .top{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+  .team{min-height:120px}
+  .qbox{grid-column:1/-1}
+}
+@media(max-width:600px){
+  .screen{padding:12px}
+  .card,.winner{padding:28px 18px}
+  .teams{gap:12px}
+  .board{padding:10px;gap:9px}
+  .ans{height:112px}
+  .back{padding-left:8px}
+  .left{gap:7px}
+  .num{width:32px;height:32px}
+  .pts{width:108px;padding:3px 5px}
+  .pts small{font-size:.62rem}
+  .decision-buttons .pass,.decision-buttons .play{min-height:84px}
+  .fin .s::after{font-size:.65rem}
+  .en,.jp{display:block;-webkit-line-clamp:unset;line-clamp:unset}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<div class="stage-scenery" aria-hidden="true"><span class="fuji"></span><span class="pagoda"></span><span class="torii"></span></div>
+<div id="overlay" class="overlay"><div class="bigx">✖</div></div>
+<div id="decisionPopup" class="decision-overlay" role="dialog" aria-modal="true" aria-labelledby="decisionTitle" aria-describedby="decisionTeam" aria-hidden="true">
+  <section class="decision-popup">
+    <div class="decision-kicker">FACE-OFF COMPLETE</div>
+    <h2 id="decisionTitle">PASS OR PLAY?</h2>
+    <p id="decisionTeam" class="decision-team"></p>
+    <div class="decision-buttons">
+      <button id="passBtn" type="button" class="b pass">PASS</button>
+      <button id="playBtn" type="button" class="b play">PLAY</button>
+    </div>
+  </section>
+</div>
+
+<header class="hdr">
+  <div class="logo"><small>TOURISM CHALLENGE</small><b>FAMILY FEUD</b></div>
+  <div class="host-names">🎙️ Hosts: Izzy &amp; Jessa</div>
+  <div><span id="round" class="pill">READY TO START</span> <button id="sfx">🔊 SFX: ON</button></div>
+</header>
+<!-- START -->
+<section id="start" class="screen active">
+  <div class="card">
+    <div style="color:var(--gold-l);font-weight:800;letter-spacing:2px">✈️ LIVE CLASSROOM GAME SHOW 🌏</div>
+    <h1>Tourism Challenge<span>Family Feud</span></h1>
+    <p>Hosted by <b>Host Izzy</b> &amp; <b>Host Jessa</b></p>
+    <div class="teams">
+      <div class="tbox"><small>TEAM 1</small><div>MONDRAGON</div></div>
+      <div class="vs">VS</div>
+      <div class="tbox"><small>TEAM 2</small><div>DELATORE</div></div>
+    </div>
+    <button id="startBtn" class="big">▶ START GAME</button>
+  </div>
+</section>
+
+<!-- GAME -->
+<section id="game" class="screen">
+  <div class="top">
+    <div id="t1" class="team"><div id="t1tag" class="tag">TEAM 1</div><div class="nm">Mondragon</div><div id="s1" class="sc">0</div></div>
+    <div class="qbox">
+      <div class="qtop"><span id="qlabel" class="qlabel"></span><span class="bank">ROUND POINTS: <span id="bank">0</span></span></div>
+      <div id="qr" class="qr"></div>
+      <div id="qe" class="qe"></div>
+    </div>
+    <div id="t2" class="team"><div id="t2tag" class="tag">TEAM 2</div><div class="nm">Delatore</div><div id="s2" class="sc">0</div></div>
+  </div>
+
+  <div id="gameStatus" class="status">
+    <div><span id="stepBadge" class="step"></span><span id="cue"></span><span id="cueTag" class="tag2"></span></div>
+    <div class="strike">STRIKE <div id="strike" class="slot">✖</div></div>
+  </div>
+
+  <div id="board" class="board"></div>
+
+  <div class="console">
+    <div class="row">
+      <button id="prevBtn" class="b prev">← PREVIOUS</button>
+      <button id="nextBtn" class="b next">NEXT →</button>
+      <button id="wrongBtn" class="b wrong">WRONG (✖)</button>
+      <button id="undoBtn" class="b undo">↩ UNDO</button>
+    </div>
+    <div class="row">
+      <button id="resetRoundBtn" class="b rr">🔄 RESET ROUND</button>
+      <button id="resetGameBtn" class="b rg">⚠️ RESET GAME</button>
+    </div>
+  </div>
+</section>
+
+<!-- WINNER -->
+<section id="winner" class="screen">
+  <div class="winner">
+    <div style="color:var(--gold-l);font-weight:900;letter-spacing:2px">TOURISM CHALLENGE: FAMILY FEUD</div>
+    <div id="winnerBanner" class="banner">🏆 WINNER: DELATORE</div>
+    <div class="final-score-heading">FINAL SCORES</div>
+    <div class="finals">
+      <div class="fin"><div class="n">Team 1: Mondragon</div><div id="f1" class="s">0</div></div>
+      <div class="fin win"><div class="n">Team 2: Delatore 🏆</div><div id="f2" class="s">0</div></div>
+    </div>
+    <div class="row">
+      <button id="replayBtn" class="big">🔁 REPLAY</button>
+      <button id="menuBtn" class="b prev" style="padding:15px 24px">🏠 MAIN MENU</button>
+    </div>
+  </div>
+</section>
+
+<script>
+/* ---------- 1. DATA ---------- */
+const NAME = { 1: "Mondragon", 2: "Delatore" };
+const POINT_ROMAJI = {
+  10: "JUU (十)",
+  15: "JUU-GO (十五)",
+  20: "NIJUU (二十)",
+  25: "NIJUU-GO (二十五)",
+  30: "SANJUU (三十)"
+};
+
+const QUESTIONS = [
+  {
+    title: "QUESTION 1",
+    romaji: "Dai-ichi mon desu! Yoi tsuaa gaido ni hitsuyou na tokusei wa nan desu ka?",
+    english: "What qualities does a good tour guide need?",
+    answers: [
+      ["Kindness", "親切", "Shinsetsu", 30],
+      ["Knowledge", "知識", "Chishiki", 25],
+      ["Communication Skills", "コミュニケーション能力", "Komyunikēshon nōryoku", 20],
+      ["Punctuality", "時間厳守", "Jikan genshu", 15],
+      ["A Smile", "笑顔", "Egao", 10]
+    ],
+    steps: [
+      { type: "intro", team: 0, text: "Question 1 Face-Off! Hosts Izzy & Jessa read the question." },
+      { type: "reveal", idx: 1, team: 2, text: "Delatore answers Knowledge — 25 points!" },
+      { type: "reveal", idx: 0, team: 1, text: "Mondragon answers Kindness (Top Answer!) — 30 points!" },
+      { type: "decision", team: 1, text: "Mondragon wins the Face-Off and gets the PASS or PLAY decision." },
+      { type: "chosen", team: 1, text: "Mondragon chooses to PLAY!" },
+      { type: "reveal", idx: 2, team: 1, text: "Mondragon answers Communication Skills — 20 points!" },
+      { type: "reveal", idx: 3, team: 1, text: "Mondragon answers Punctuality — 15 points!" },
+      { type: "strike", team: 1, text: "Mondragon gives a wrong answer — 1 Red X Strike!" },
+      { type: "steal", team: 2, text: "STEAL OPPORTUNITY! Delatore confers to steal the board!" },
+      { type: "reveal", idx: 4, team: 2, text: "Delatore answers A Smile — 10 points!" },
+      { type: "win", team: 2, text: "DELATORE STEALS AND WINS QUESTION 1 (+100 PTS)!" }
+    ]
+  },
+
+  {
+    title: "QUESTION 2",
+    romaji: "Dai-ni mon desu! Ryokou no ato, nani o omiyage to shite kaimasu ka?",
+    english: "What do people buy as souvenirs after traveling?",
+    answers: [
+      ["Snacks", "お菓子", "Okashi", 30],
+      ["Keychains", "キーホルダー", "Kīhorudā", 25],
+      ["T-shirts", "Tシャツ", "Tīshatsu", 20],
+      ["Local Souvenirs", "地元のお土産", "Jimoto no omiyage", 15],
+      ["Food", "食べ物", "Tabemono", 10]
+    ],
+    steps: [
+      { type: "intro", team: 0, text: "Question 2 Face-Off! Strikes reset to 0." },
+      { type: "reveal", idx: 1, team: 1, text: "Mondragon answers Keychains — 25 points!" },
+      { type: "reveal", idx: 0, team: 2, text: "Delatore answers Snacks (Top Answer!) — 30 points!" },
+      { type: "decision", team: 2, text: "Delatore wins the Face-Off and gets the PASS or PLAY decision." },
+      { type: "chosen", team: 2, text: "Delatore chooses to PLAY!" },
+      { type: "reveal", idx: 2, team: 2, text: "Delatore answers T-shirts — 20 points!" },
+      { type: "reveal", idx: 3, team: 2, text: "Delatore answers Local Souvenirs — 15 points!" },
+      { type: "strike", team: 2, text: "Delatore gives a wrong answer — 1 Red X Strike!" },
+      { type: "steal", team: 1, text: "STEAL OPPORTUNITY! Mondragon confers to steal the board!" },
+      { type: "reveal", idx: 4, team: 1, text: "Mondragon answers Food — 10 points!" },
+      { type: "win", team: 1, text: "MONDRAGON STEALS AND WINS QUESTION 2 (+100 PTS)!" }
+    ]
+  },
+  {
+    title: "QUESTION 3",
+    romaji: "Dai-san mon desu! Ryokou-chuu ni mondai ga okitara, dou shimasu ka?",
+    english: "What do people do when they encounter a problem while traveling?",
+    answers: [
+      ["Ask the Staff", "スタッフに聞く", "Sutaffu ni kiku", 30],
+      ["Search the Internet", "インターネットで調べる", "Intānetto de shiraberu", 25],
+      ["Call a Friend", "友達に電話する", "Tomodachi ni denwa suru", 20],
+      ["Check a Map", "地図を確認する", "Chizu o kakunin suru", 15],
+      ["Contact the Police", "警察に連絡する", "Keisatsu ni renraku suru", 10]
+    ],
+    steps: [
+      { type: "intro", team: 0, text: "Question 3 Face-Off! Score is tied 100 – 100." },
+      { type: "reveal", idx: 1, team: 2, text: "Delatore answers Search the Internet — 25 points!" },
+      { type: "reveal", idx: 0, team: 1, text: "Mondragon answers Ask the Staff (Top Answer!) — 30 points!" },
+      { type: "decision", team: 1, text: "Mondragon wins the Face-Off and gets the PASS or PLAY decision." },
+      { type: "chosen", team: 1, text: "Mondragon chooses to PLAY!" },
+      { type: "reveal", idx: 2, team: 1, text: "Mondragon answers Call a Friend — 20 points!" },
+      { type: "reveal", idx: 3, team: 1, text: "Mondragon answers Check a Map — 15 points!" },
+      { type: "reveal", idx: 4, team: 1, text: "Mondragon answers Contact the Police — 10 points! Clean sweep!" },
+      { type: "win", team: 1, text: "MONDRAGON COMPLETES ALL ANSWERS AND WINS QUESTION 3 (+100 PTS)!" }
+    ]
+  },
+  {
+    title: "QUESTION 4",
+    romaji: "Dai-yon mon desu! Nihon no yuumei na kankouchi wa doko desu ka?",
+    english: "What are some famous tourist destinations in Japan?",
+    answers: [
+      ["Kyoto", "京都", "Kyōto", 30],
+      ["Tokyo", "東京", "Tōkyō", 25],
+      ["Osaka", "大阪", "Ōsaka", 20],
+      ["Mount Fuji", "富士山", "Fujisan", 15],
+      ["Okinawa", "沖縄", "Okinawa", 10]
+    ],
+    steps: [
+      { type: "intro", team: 0, text: "Question 4 Face-Off! Mondragon leads 200 – 100." },
+      { type: "reveal", idx: 1, team: 1, text: "Mondragon answers Tokyo — 25 points!" },
+      { type: "reveal", idx: 0, team: 2, text: "Delatore answers Kyoto (Top Answer!) — 30 points!" },
+      { type: "decision", team: 2, text: "Delatore wins the Face-Off and gets the PASS or PLAY decision." },
+      { type: "chosen", team: 2, text: "Delatore chooses to PLAY!" },
+      { type: "reveal", idx: 2, team: 2, text: "Delatore answers Osaka — 20 points!" },
+      { type: "reveal", idx: 3, team: 2, text: "Delatore answers Mount Fuji — 15 points!" },
+      { type: "reveal", idx: 4, team: 2, text: "Delatore answers Okinawa — 10 points! Clean sweep!" },
+      { type: "win", team: 2, text: "DELATORE COMPLETES ALL ANSWERS AND WINS QUESTION 4 (+100 PTS)!" },
+      { type: "tie", team: 0, text: "🔥 TIE-BREAKER! Both teams are tied at 200 – 200 heading into the Final Round!" }
+    ]
+  },
+  {
+    title: "QUESTION 5 — FINAL ROUND",
+    romaji: "Dai-go mon desu! Ryokou ni iku toki, nani o motte ikimasu ka?",
+    english: "What do people bring when traveling?",
+    answers: [
+      ["Swimsuit", "水着", "Mizugi", 30],
+      ["Towel", "タオル", "Taoru", 25],
+      ["Sunscreen", "日焼け止め", "Hiyakedome", 20],
+      ["Sunglasses", "サングラス", "Sangurasu", 15],
+      ["Water", "水", "Mizu", 10]
+    ],
+    steps: [
+      { type: "intro", team: 0, text: "Question 5 — Championship Tie-Breaker Face-Off!" },
+      { type: "reveal", idx: 0, team: 2, text: "Delatore buzzes first and answers Swimsuit (#1 Answer — 30 points)!" },
+      { type: "lock", team: 2, text: "Mondragon cannot answer because the #1 answer was already taken!" },
+      { type: "decision", team: 2, text: "Delatore wins the Face-Off and gets the PASS or PLAY decision." },
+      { type: "chosen", team: 2, text: "Delatore chooses to PLAY for the Championship!" },
+      { type: "reveal", idx: 1, team: 2, text: "Delatore answers Towel — 25 points!" },
+      { type: "reveal", idx: 2, team: 2, text: "Delatore answers Sunscreen — 20 points!" },
+      { type: "reveal", idx: 3, team: 2, text: "Delatore answers Sunglasses — 15 points!" },
+      { type: "reveal", idx: 4, team: 2, text: "Delatore answers Water — 10 points! Clean sweep!" },
+      { type: "win", team: 2, text: "DELATORE SWEEPS THE FINAL ROUND (+100 PTS) AND WINS THE CHAMPIONSHIP!" }
+    ]
+  }
+];
+
+/* Every step becomes one "state" (what the screen shows at that moment).
+   Building them all up front makes Next / Previous / Undo trivial:
+   we just move an index back and forth. */
+const TIMELINE = [];
+(function build() {
+  let s1 = 0, s2 = 0;
+  QUESTIONS.forEach((q, qi) => {
+    const revealed = [false, false, false, false, false];
+    let strike = false, bank = 0, choice = null;
+    q.steps.forEach((step, si) => {
+      if (step.type === "reveal" && !revealed[step.idx]) {
+        revealed[step.idx] = true;
+        bank += q.answers[step.idx][3];
+      }
+      if (step.type === "strike") strike = true;
+      if (step.type === "chosen") choice = "PLAY";
+      if (step.type === "win") { if (step.team === 1) s1 += 100; else s2 += 100; }
+      TIMELINE.push({ screen: "game", qi, si, step, revealed: [...revealed], strike, bank, s1, s2, choice });
+    });
+  });
+  TIMELINE.push({ screen: "winner", s1, s2 });
+})();
+
+/* ---------- 2. SOUND ---------- */
+let soundOn = true, audio = null;
+function beep(kind) {
+  if (!soundOn) return;
+  try {
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    const t = audio.currentTime;
+    const notes = kind === "win" ? [523, 659, 784, 1047] : [kind === "ding" ? 880 : 100];
+    notes.forEach((f, i) => {
+      const o = audio.createOscillator(), g = audio.createGain();
+      o.type = kind === "buzzer" ? "sawtooth" : "triangle";
+      o.frequency.value = f;
+      g.gain.setValueAtTime(0.2, t + i * 0.11);
+      g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.11 + (kind === "buzzer" ? 0.55 : 0.4));
+      o.connect(g); g.connect(audio.destination);
+      o.start(t + i * 0.11); o.stop(t + i * 0.11 + 0.6);
+    });
+  } catch (e) {}
+}
+
+/* ---------- 3. STATE ---------- */
+const $ = (id) => document.getElementById(id);
+let index = -1;          // -1 = start screen
+let manualStrike = false; // strike the host adds by pressing WRONG
+let history = [];         // for UNDO
+let shownQ = -1;          // which question's board is drawn
+let passRounds = {};
+const SAVE_KEY = "tourism-family-feud-save-v1";
+let storageAvailable = true;
+
+function isValidIndex(value) {
+  return Number.isInteger(value) && value >= -1 && value < TIMELINE.length;
+}
+
+function isValidPassRounds(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value)
+    && Object.entries(value).every(([qi, passed]) => /^\d+$/.test(qi) && Number(qi) < QUESTIONS.length && passed === true);
+}
+
+function isValidSnapshot(value) {
+  return value !== null && typeof value === "object"
+    && isValidIndex(value.index) && typeof value.manualStrike === "boolean"
+    && isValidPassRounds(value.passRounds);
+}
+
+function saveGameState() {
+  if (!storageAvailable) return;
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      version: 1,
+      index,
+      manualStrike,
+      passRounds,
+      history
+    }));
+  } catch (error) {
+    storageAvailable = false;
+    console.warn("Could not save game progress locally; the game will continue without recovery.", error);
+  }
+}
+
+function restoreGameState() {
+  if (!storageAvailable) return;
+  let saved;
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (raw === null) return;
+    saved = JSON.parse(raw);
+  } catch (error) {
+    storageAvailable = false;
+    console.warn("Could not read the local game save; starting a new game.", error);
+    return;
+  }
+
+  if (!saved || saved.version !== 1 || !isValidSnapshot(saved)
+      || !Array.isArray(saved.history) || !saved.history.every(isValidSnapshot)) {
+    console.warn("The local game save is invalid or from another version; starting a new game.");
+    return;
+  }
+  index = saved.index;
+  manualStrike = saved.manualStrike;
+  passRounds = saved.passRounds;
+  history = saved.history;
+}
+
+function decisionStepIndex(qi) {
+  return QUESTIONS[qi].steps.findIndex((step) => step.type === "decision");
+}
+
+function teamForState(st) {
+  if (!passRounds[st.qi] || st.si <= decisionStepIndex(st.qi)) return st.step.team;
+  if (st.step.team === 1) return 2;
+  if (st.step.team === 2) return 1;
+  return st.step.team;
+}
+
+function cueForState(st) {
+  if (st.step.type === "intro" && st.qi >= 2) {
+    const scores = scoresAt(index - 1);
+    if (st.qi === 2) return `Question 3 Face-Off! Score is ${scores.s1} – ${scores.s2}.`;
+    if (st.qi === 3) {
+      if (scores.s1 === scores.s2) return `Question 4 Face-Off! Score is tied ${scores.s1} – ${scores.s2}.`;
+      const leader = scores.s1 > scores.s2 ? 1 : 2;
+      return `Question 4 Face-Off! ${NAME[leader]} leads ${Math.max(scores.s1, scores.s2)} – ${Math.min(scores.s1, scores.s2)}.`;
+    }
+    if (scores.s1 === scores.s2) {
+      return `Question 5 — Championship Tie-Breaker Face-Off! Score is tied ${scores.s1} – ${scores.s2}.`;
+    }
+    const leader = scores.s1 > scores.s2 ? 1 : 2;
+    return `Question 5 — Championship Face-Off! ${NAME[leader]} leads ${Math.max(scores.s1, scores.s2)} – ${Math.min(scores.s1, scores.s2)}.`;
+  }
+  if (st.step.type === "tie") {
+    const scores = scoresAt(index);
+    if (scores.s1 === scores.s2) {
+      return `🔥 TIE-BREAKER! Both teams are tied at ${scores.s1} – ${scores.s2} heading into the Final Round!`;
+    }
+    const leader = scores.s1 > scores.s2 ? 1 : 2;
+    return `🔥 FINAL ROUND! ${NAME[leader]} leads ${Math.max(scores.s1, scores.s2)} – ${Math.min(scores.s1, scores.s2)} heading into the Final Round!`;
+  }
+  if (!passRounds[st.qi] || st.si <= decisionStepIndex(st.qi)) return st.step.text;
+  if (st.step.type === "chosen") {
+    const passingTeam = QUESTIONS[st.qi].steps[decisionStepIndex(st.qi)].team;
+    return `${NAME[passingTeam].toUpperCase()} PASSES. ${NAME[teamForState(st)].toUpperCase()} WILL PLAY!`;
+  }
+  return st.step.text.replace(/Mondragon|Delatore/gi, (name) => {
+    const replacement = name.toLowerCase() === "mondragon" ? "Delatore" : "Mondragon";
+    return name === name.toUpperCase() ? replacement.toUpperCase() : replacement;
+  });
+}
+
+function scoresAt(targetIndex) {
+  const scores = { s1: 0, s2: 0 };
+  for (let i = 0; i <= targetIndex; i++) {
+    const st = TIMELINE[i];
+    if (st.screen !== "game" || st.step.type !== "win") continue;
+    const team = teamForState(st);
+    if (team === 1) scores.s1 += 100;
+    if (team === 2) scores.s2 += 100;
+  }
+  return scores;
+}
+
+function setDecisionPopup(open, team) {
+  const popup = $("decisionPopup");
+  const wasOpen = popup.classList.contains("show");
+  popup.classList.toggle("show", open);
+  popup.setAttribute("aria-hidden", String(!open));
+  if (open) {
+    $("decisionTeam").textContent = `${NAME[team].toUpperCase()}, MAKE YOUR CHOICE!`;
+    if (!wasOpen) $("passBtn").focus();
+  }
+  return wasOpen;
+}
+
+function showScreen(name) {
+  ["start", "game", "winner"].forEach((s) => $(s).classList.toggle("active", s === name));
+}
+function drawBoard(qi) {
+  $("board").innerHTML = QUESTIONS[qi].answers.map((a, i) => `
+    <div class="ans"><div class="inner">
+      <div class="front"><div class="oval">${i + 1}</div></div>
+      <div class="back">
+        <div class="left"><div class="num">${i + 1}</div>
+          <div class="txt"><div class="en">${a[0]}</div>
+          <div class="jp">${a[1]} • <i>${a[2]}</i></div></div></div>
+        <div class="pts"><b>${a[3]}</b><small>POINTS — ${POINT_ROMAJI[a[3]]}</small></div>
+      </div>
+    </div></div>`).join("");
+  shownQ = qi;
+}
+
+function setScore(el, value) {
+  if (el.textContent !== String(value)) {
+    el.textContent = value;
+    el.classList.add("bump");
+    setTimeout(() => el.classList.remove("bump"), 280);
+  }
+}
+
+function render(effects) {
+  saveGameState();
+  if (index < 0) {
+    setDecisionPopup(false);
+    showScreen("start");
+    $("round").textContent = "READY TO START";
+    stopConfetti();
+    return;
+  }
+  const st = TIMELINE[index];
+
+  if (st.screen === "winner") {
+    setDecisionPopup(false);
+    showScreen("winner");
+    $("round").textContent = "CHAMPIONSHIP RESULTS";
+    const scores = scoresAt(index);
+    $("f1").textContent = scores.s1;
+    $("f2").textContent = scores.s2;
+    $("f1").parentElement.classList.toggle("win", scores.s1 > scores.s2);
+    $("f2").parentElement.classList.toggle("win", scores.s2 > scores.s1);
+    $("winnerBanner").textContent = scores.s1 === scores.s2
+      ? "🏆 TIE GAME"
+      : `🏆 WINNER: ${NAME[scores.s1 > scores.s2 ? 1 : 2].toUpperCase()}`;
+    if (effects) beep("win");
+    startConfetti();
+    return;
+  }
+
+  stopConfetti();
+  showScreen("game");
+  const q = QUESTIONS[st.qi], step = st.step;
+  const activeTeam = teamForState(st);
+  const scores = scoresAt(index);
+  if (shownQ !== st.qi) drawBoard(st.qi);
+
+  $("round").textContent = `QUESTION ${st.qi + 1} OF 5`;
+  $("qlabel").textContent = q.title;
+  $("qr").textContent = q.romaji;
+  $("qe").textContent = q.english;
+  $("bank").textContent = st.bank;
+  setScore($("s1"), scores.s1);
+  setScore($("s2"), scores.s2);
+
+  [1, 2].forEach((n) => {
+    $("t" + n).classList.toggle("on", activeTeam === n);
+    $("t" + n + "tag").textContent = activeTeam === n ? "★ ACTIVE TURN" : "TEAM " + n;
+  });
+
+  $("stepBadge").textContent = `STEP ${st.si + 1} / ${q.steps.length}`;
+  $("cue").textContent = cueForState(st);
+
+  const tag = $("cueTag");
+  tag.style.display = "none";
+  tag.className = "tag2";
+  if (step.type === "steal") {
+    tag.className = "tag2"; tag.textContent = "⚡ STEAL OPPORTUNITY"; tag.style.display = "inline-block";
+  } else if (step.type === "tie") {
+    tag.className = "tag2 tie"; tag.textContent = "🔥 TIE-BREAKER"; tag.style.display = "inline-block";
+  } else if (st.choice && step.type !== "win") {
+    const choice = passRounds[st.qi] ? "PASS" : st.choice;
+    tag.className = "tag2 " + (choice === "PASS" ? "pass" : "play");
+    tag.textContent = "CHOICE: " + choice;
+    tag.style.display = "inline-block";
+  }
+
+  const isDecision = step.type === "decision";
+  const decisionWasOpen = setDecisionPopup(isDecision, step.team);
+  $("gameStatus").classList.toggle("steal", step.type === "steal");
+
+  const hasStrike = st.strike || manualStrike;
+  $("strike").classList.toggle("on", hasStrike);
+
+  document.querySelectorAll(".ans").forEach((el, i) => el.classList.toggle("rev", st.revealed[i]));
+
+  if (effects) {
+    if (step.type === "reveal") beep("ding");
+    if (step.type === "strike") strikeFlash();
+    if (step.type === "win") beep("win");
+  }
+
+  $("prevBtn").disabled = index <= 0;
+  $("nextBtn").disabled = index >= TIMELINE.length - 1 || isDecision;
+  $("wrongBtn").disabled = isDecision || hasStrike || step.type === "win" || step.type === "tie";
+  $("undoBtn").disabled = history.length === 0;
+  if (decisionWasOpen && !isDecision) $("nextBtn").focus();
+}
+
+function strikeFlash() {
+  const o = $("overlay");
+  o.classList.remove("show");
+  void o.offsetWidth; // restart the animation
+  o.classList.add("show");
+  beep("buzzer");
+}
+
+/* ---------- 4. HOST CONTROLS ---------- */
+function snapshot() { history.push({ index, manualStrike, passRounds: { ...passRounds } }); }
+
+function next() {
+  if (index >= TIMELINE.length - 1) return;
+  if (index >= 0 && TIMELINE[index].step.type === "decision") return;
+  snapshot();
+  const oldQ = index >= 0 ? TIMELINE[index].qi : -1;
+  index++;
+  if (TIMELINE[index].qi !== oldQ || TIMELINE[index].strike) manualStrike = false;
+  render(true);
+}
+
+function prev() {
+  if (index <= 0) return;
+  snapshot();
+  manualStrike = false;
+  index--;
+  render(false);
+}
+
+function wrong() {
+  if (index < 0) return;
+  const st = TIMELINE[index], nx = TIMELINE[index + 1];
+  if (st.step.type === "decision" || st.strike || manualStrike) return;
+  if (nx && nx.qi === st.qi && nx.step.type === "strike") { next(); return; }
+  snapshot();
+  manualStrike = true;
+  strikeFlash();
+  render(false);
+}
+
+function choose(choice) {
+  if (index < 0 || TIMELINE[index].step.type !== "decision") return;
+  const st = TIMELINE[index];
+  snapshot();
+  if (choice === "PASS") passRounds[st.qi] = true;
+  else delete passRounds[st.qi];
+  index++;
+  render(true);
+}
+
+function undo() {
+  if (!history.length) return;
+  const p = history.pop();
+  index = p.index;
+  manualStrike = p.manualStrike;
+  passRounds = p.passRounds;
+  render(false);
+}
+
+function resetRound() {
+  if (index < 0) return;
+  snapshot();
+  const q = TIMELINE[index].qi;
+  delete passRounds[q];
+  index = TIMELINE.findIndex((t) => t.qi === q);
+  manualStrike = false;
+  render(false);
+}
+
+function resetGame() {
+  history = [];
+  manualStrike = false;
+  passRounds = {};
+  index = 0;
+  render(false);
+}
+
+$("startBtn").onclick = resetGame;
+$("replayBtn").onclick = resetGame;
+$("menuBtn").onclick = () => { history = []; manualStrike = false; passRounds = {}; index = -1; render(false); };
+$("nextBtn").onclick = next;
+$("prevBtn").onclick = prev;
+$("wrongBtn").onclick = wrong;
+$("undoBtn").onclick = undo;
+$("resetRoundBtn").onclick = resetRound;
+$("resetGameBtn").onclick = resetGame;
+$("playBtn").onclick = () => choose("PLAY");
+$("passBtn").onclick = () => choose("PASS");
+$("sfx").onclick = () => {
+  soundOn = !soundOn;
+  $("sfx").textContent = soundOn ? "🔊 SFX: ON" : "🔇 SFX: OFF";
+};
+
+document.addEventListener("keydown", (e) => {
+  if (index < 0) return;
+  if ($("decisionPopup").classList.contains("show")) {
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") e.preventDefault();
+    if (e.key === "Tab") {
+      const passButton = $("passBtn"), playButton = $("playBtn");
+      if (e.shiftKey && document.activeElement === passButton) {
+        e.preventDefault();
+        playButton.focus();
+      } else if (!e.shiftKey && document.activeElement === playButton) {
+        e.preventDefault();
+        passButton.focus();
+      }
+    }
+    return;
+  }
+  if (e.key === "ArrowRight") { e.preventDefault(); next(); }
+  if (e.key === "ArrowLeft") { e.preventDefault(); prev(); }
+});
+
+/* ---------- 5. CONFETTI ---------- */
+const cv = $("confetti"), cx = cv.getContext("2d");
+let bits = [], raf = null;
+function sizeCanvas() { cv.width = innerWidth; cv.height = innerHeight; }
+addEventListener("resize", sizeCanvas);
+sizeCanvas();
+restoreGameState();
+render(false);
+
+function startConfetti() {
+  if (raf) return;
+  const colors = ["#ffe066", "#f5b700", "#38a3ff", "#10b981", "#ffffff", "#ef4444"];
+  bits = Array.from({ length: 120 }, () => ({
+    x: Math.random() * cv.width,
+    y: Math.random() * -cv.height,
+    w: Math.random() * 10 + 6,
+    h: Math.random() * 6 + 4,
+    c: colors[Math.floor(Math.random() * colors.length)],
+    vy: Math.random() * 3 + 2,
+    vx: Math.random() * 2 - 1,
+    a: Math.random() * 360,
+    spin: Math.random() * 6 - 3
+  }));
+  (function loop() {
+    cx.clearRect(0, 0, cv.width, cv.height);
+    bits.forEach((p) => {
+      p.y += p.vy; p.x += p.vx; p.a += p.spin;
+      if (p.y > cv.height) { p.y = -12; p.x = Math.random() * cv.width; }
+      cx.save();
+      cx.translate(p.x, p.y);
+      cx.rotate((p.a * Math.PI) / 180);
+      cx.fillStyle = p.c;
+      cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      cx.restore();
+    });
+    raf = requestAnimationFrame(loop);
+  })();
+}
+function stopConfetti() {
+  if (raf) { cancelAnimationFrame(raf); raf = null; }
+  cx.clearRect(0, 0, cv.width, cv.height);
+}
+</script>
+</body>
+</html>
